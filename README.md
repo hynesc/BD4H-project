@@ -1,6 +1,6 @@
 ## Project Description:
 
-In this project, we replicate Xiao et al. (2018), who proposed the CONTENT model for hospital readmission prediction and claimed it outperforms state-of-the-art baselines. However, we find that the reported performance gains are not statistically significant. We reimplemented the CONTENT model and the GRU benchmark in PyTorch and evaluated them on the same synthetic dataset. Our results show no significant difference in performance under the original setup. To extend the work, we introduced a grid search for hyperparameter tuning. With this optimization, CONTENT does outperform the baselines, supporting the model’s potential under improved training conditions.
+In this project, we replicate Xiao et al. (2018), who proposed the CONTENT model for hospital readmission prediction and claimed it outperforms state-of-the-art baselines. However, we find that the reported performance gains are not statistically significant. We reimplemented the CONTENT model and the GRU benchmark in PyTorch and evaluated them on the same synthetic dataset. Our results show no significant difference in performance between the two under the original setup. To extend the work, we introduced a grid search for hyperparameter tuning. With this optimization, CONTENT does outperform the baselines, supporting the model’s potential under improved training conditions.
 
 ## Instructions for Execution:
 
