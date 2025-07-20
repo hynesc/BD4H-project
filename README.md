@@ -144,5 +144,3 @@ This project is designed to be run in a Google Colab environment to leverage fre
 ## Conclusion
 
 This project successfully replicated the CONTENT model and demonstrated that while the original paper's claims of superiority were not statistically significant under the specified parameters, the model architecture has strong potential. Through a systematic hyperparameter search—our key extension—we unlocked significant performance gains, proving that **a well-tuned CONTENT model is superior to the GRU baseline** for this task.
-
-Our findings underscore the critical importance of rigorous hyperparameter optimization and statistical validation in machine learning research.
