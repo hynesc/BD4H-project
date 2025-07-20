@@ -1,9 +1,148 @@
-## Project Description:
+# Revisiting Neural Models for Hospital Readmission: A Replication and Extension Study
 
-In this project, we replicate Xiao et al. (2018), who proposed the CONTENT model for hospital readmission prediction and claimed it outperforms state-of-the-art baselines. However, we find that the reported performance gains are not statistically significant. We reimplemented the CONTENT model and the GRU benchmark in PyTorch and evaluated them on the same synthetic dataset. Our results show no significant difference in performance between the two under the original setup. To extend the work, we introduced a grid search for hyperparameter tuning. With this optimization, CONTENT does outperform the baselines, supporting the model’s potential under improved training conditions.
+This project undertakes a comprehensive replication and extension of the research paper "Readmission prediction via deep contextual embedding of clinical concepts" by Xiao et al. (2018). The original paper introduced the CONTENT model, a novel deep learning architecture for predicting 30-day hospital readmissions.
 
-## Instructions for Execution:
+Our primary goals were to validate the authors' original findings, assess their statistical significance, and explore potential improvements through modern frameworks and systematic hyperparameter optimization.
 
-We created this project in Google Colab. To execute this, simply download this github repo and upload it unzipped to your drive. In the code folder, click and open the jupyter file "CONTENT_colab.ipynb" in Google Colab. The Table of Contents will help guide you through what we did step-by-step. The outputs you see after each code block are our implementation results. If you would like to run it yourself, make sure to connect to a GPU runtime and hit run all!
+**Links:** [Original Paper (PloS one)](https://doi.org/10.1371/journal.pone.0195024) | [Project Code (`.ipynb`)](./CONTENT_colab.ipynb)
 
-Note: you will also see files get_embedding.py and content-env.yaml in the code folder. Since Google Colab does not support Gensim, we needed to run these locally to generate our Word2Vec matrix. You do not need to run these, as the matrix is already saved to the resource folder, which the CONTENT_colab.ipynb automatically pulls from :)
+---
+
+## Table of Contents
+- [Project Overview](#project-overview)
+- [The Challenge of Hospital Readmission](#the-challenge-of-hospital-readmission)
+- [Core Objectives](#core-objectives)
+- [Methodology](#methodology)
+  - [Dataset](#dataset)
+  - [Model Architectures](#model-architectures)
+  - [From Theano to PyTorch](#from-theano-to-pytorch)
+- [Key Results](#key-results)
+  - [Replication Findings](#replication-findings)
+  - [Extension: The Impact of Hyperparameter Tuning](#extension-the-impact-of-hyperparameter-tuning)
+- [How to Run This Project](#how-to-run-this-project)
+  - [Download the Project](#download-the-project)
+  - [Upload to Google Drive](#upload-to-google-drive)
+  - [Run in Google Colab](#run-in-google-colab)
+  - [Note on Other Files](#note-on-other-files)
+- [Conclusion](#conclusion)
+
+---
+
+## Project Overview
+
+This repository contains a complete reimplementation of the CONTENT and baseline GRU models in PyTorch. The project is structured as a single Google Colab notebook that handles all stages: data preprocessing, model definition, training, evaluation, and hyperparameter tuning.
+
+Our initial findings showed that the performance gains reported in the original paper were not statistically significant. However, after replicating the model architectures and introducing a systematic grid search for hyperparameter tuning—an extension to the original work—we discovered that a well-tuned **CONTENT model significantly outperforms the baseline GRU**, confirming the potential of the proposed architecture.
+
+---
+
+## The Challenge of Hospital Readmission
+
+Unplanned hospital readmissions are a major burden on healthcare systems, leading to high costs and indicating potential gaps in patient care. Predicting which patients are at high risk for readmission allows providers to implement targeted interventions. Electronic Health Records (EHRs) contain a wealth of data for this task, but their complexity requires sophisticated models that can capture temporal patterns and long-term patient context. The CONTENT model was designed to address this by combining a sequential GRU with a topic model to create a richer patient representation.
+
+---
+
+## Core Objectives
+
+This study was guided by three main hypotheses:
+1.  **Replication & Validation:** Can we reproduce the performance of the Theano-based CONTENT model using a modern PyTorch implementation on the provided synthetic dataset?
+2.  **Statistical Significance:** Are the performance gains of CONTENT over the baseline GRU, as reported by the authors, statistically significant?
+3.  **Performance Extension:** Can we improve the model's predictive performance by implementing a systematic hyperparameter tuning process (grid search), which was not detailed in the original paper?
+
+---
+
+## Methodology
+
+### Dataset
+The project uses the synthetic dataset published by the original authors, which was generated to mimic a real-world EHR dataset of 5,393 Congestive Heart Failure (CHF) patients.
+-   **Size:** 3,000 synthetic patients, 239,936 total visits.
+-   **Features:** 618 unique clinical event codes (diagnoses, medications, etc.).
+-   **Target:** Binary label for each visit indicating if a 30-day readmission occurred.
+-   **Preprocessing:** Following the paper's methodology, we filter for inpatient visits, remove overly frequent "stop-word" events, and structure each patient's record as a sequence of visits, where each visit is a multi-hot vector of clinical codes.
+
+### Model Architectures
+
+Two main models were implemented:
+
+1.  **CONTENT Model:** A two-branch hybrid architecture.
+    * **GRU Branch:** A GRU processes the sequence of patient visits to capture local, temporal patterns in the EHR data.
+    * **Recognition Network (Topic Model):** A variational autoencoder-style network that learns a latent topic distribution (`theta`) for each patient, representing their global, long-term clinical context.
+    * **Prediction:** The final prediction is a fusion of the GRU's hidden state and the learned topic vector.
+
+2.  **GRU Model (Baseline):** A standard GRU that only uses the sequential branch to make predictions, serving as a powerful baseline to measure the added value of the topic modeling component.
+
+### From Theano to PyTorch
+The original models were built in Theano, a now-discontinued framework. We reimplemented both architectures in PyTorch, ensuring all layers, activation functions, and training objectives matched the original paper's description.
+
+---
+
+## Key Results
+
+Our experiments were run over multiple trials (10-30) to ensure robust and statistically sound results. The primary evaluation metric is **Area Under the Precision-Recall Curve (PR-AUC)**, which is well-suited for imbalanced datasets like this one.
+
+### Replication Findings
+Using the hyperparameters described in the original paper, we found **no statistically significant difference** between the CONTENT model and the GRU baseline. This contradicts the paper's central claim for the synthetic dataset.
+
+| Method      | Source       | PR-AUC (Mean ± SD) | ROC-AUC (Mean ± SD) |
+| :---------- | :----------- | :----------------- | :------------------ |
+| **CONTENT** | Replication  | 0.6391 ± 0.0025    | 0.7970 ± 0.0014     |
+| **GRU** | Replication  | 0.6401 ± 0.0017    | 0.7979 ± 0.0013     |
+
+*Results from 30 trials using original paper's hyperparameters.*
+
+### Extension: The Impact of Hyperparameter Tuning
+
+We implemented a grid search to optimize key hyperparameters (hidden size, learning rate, number of topics). After tuning, the results changed dramatically.
+
+| Method      | Tuning         | PR-AUC (Mean ± SD) | ROC-AUC (Mean ± SD) |
+| :---------- | :------------- | :----------------- | :------------------ |
+| **CONTENT** | **Tuned (Grid)** | **0.6464 ± 0.0022** | **0.8026 ± 0.0014** |
+| **GRU** | Tuned (Grid)   | 0.6391 ± 0.0025    | 0.7970 ± 0.0014     |
+
+*Results from 30 trials using optimized hyperparameters.*
+
+With optimized parameters, the **CONTENT model's PR-AUC is significantly higher than the GRU's (p < 0.0001)**. This finding suggests that the architecture is powerful, but its performance is highly sensitive to its configuration. The lack of a systematic tuning process in the original work may have obscured the model's true potential.
+
+---
+
+## How to Run This Project
+
+This project is designed to be run in a Google Colab environment to leverage free GPU resources, which significantly speeds up training.
+
+### Download the Project
+
+1.  Download the project repository as a ZIP file from GitHub:  
+    [github.com/hynesc/readmission-prediction](https://github.com/hynesc/readmission-prediction)
+
+2.  Unzip the downloaded file on your computer.
+
+### Upload to Google Drive
+
+1.  Upload the entire unzipped project folder (e.g., `readmission-prediction-main`) to the **main (root)** directory of your Google Drive.
+
+### Run in Google Colab
+
+1.  In your Google Drive, navigate into the uploaded folder, then into the `code` subfolder.
+
+2.  Open the `CONTENT_colab.ipynb` notebook with **Google Colab**.
+
+3.  To run it yourself:
+    -   Connect to a **GPU runtime**:  
+        `Runtime > Change runtime type` → Select **T4 GPU**
+    -   Run all cells:  
+        `Runtime > Run all`
+
+### Note on Other Files
+
+-   The `code` folder also contains `get_embedding.py` and `content-env.yaml`.
+-   Since Google Colab's environment had limitations with the Gensim library at the time, we used these files **locally** to generate the Word2Vec embedding matrix.
+-   **You do not need to run these files.**  
+    The **pre-trained matrix** (`word2vec.vector`) is already saved in the `resource` folder, and the Colab notebook automatically loads it from there.
+
+---
+
+## Conclusion
+
+This project successfully replicated the CONTENT model and demonstrated that while the original paper's claims of superiority were not statistically significant under the specified parameters, the model architecture has strong potential. Through a systematic hyperparameter search—our key extension—we unlocked significant performance gains, proving that **a well-tuned CONTENT model is superior to the GRU baseline** for this task.
+
+Our findings underscore the critical importance of rigorous hyperparameter optimization and statistical validation in machine learning research.
