@@ -4,7 +4,7 @@ This project undertakes a comprehensive replication and extension of the researc
 
 Our primary goals were to validate the authors' original findings, assess their statistical significance, and explore potential improvements through modern frameworks and systematic hyperparameter optimization.
 
-**Links:** [Original Paper (PloS one)](https://doi.org/10.1371/journal.pone.0195024) | [Project Code (`.ipynb`)](./CONTENT_colab.ipynb)
+**Links:** [Original Paper (PloS one)](https://doi.org/10.1371/journal.pone.0195024) | [Project Code (`.ipynb`)](./code/CONTENT_colab.ipynb)
 
 ---
 
