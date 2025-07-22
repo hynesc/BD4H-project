@@ -78,7 +78,7 @@ The original models were built in Theano, a now-discontinued framework. We reimp
 
 ## Key Results
 
-Our experiments were run over multiple trials (10-30) to ensure robust and statistically sound results. The primary evaluation metric is **Area Under the Precision-Recall Curve (PR-AUC)**, which is well-suited for imbalanced datasets like this one.
+We conducted our experiments over 30 trials (up from the original authors’ 10) to ensure more robust and statistically sound results. The primary evaluation metric is **Area Under the Precision-Recall Curve (PR-AUC)**, which is well-suited for imbalanced datasets like this one.
 
 ### Replication Findings
 Using the hyperparameters described in the original paper, we found **no statistically significant difference** between the CONTENT model and the GRU baseline. This contradicts the paper's central claim for the synthetic dataset.
